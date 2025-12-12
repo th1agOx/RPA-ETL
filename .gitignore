@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+
+# Virtual env
+venv/
+.env/
+*.env
+
+output/
+*.json
+*.csv
+
+tests/input_extract_data/
