@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 from ..schema.models import InvoiceExtractionResult, Item, Party, Financials
 from .validators import cnpj_validator, nfe_key_validator, monetari_value_validator
@@ -8,7 +8,7 @@ CNPJ_PATTERN = r'\b\d{2}\.?\d{3}\.?\d{3}/?\.?\d{4}-?\d{2}\b'
 KEY_PATTERN = r'\b\d{44}\b'  # nfe key de 44 dígitos
 VALUE_PATTERN = r'R?\$?\s*([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{2}))'
 
-def find_key_valid_access(text: str) -> Optional[Dict[str, any]]:
+def find_key_valid_access(text: str) -> Optional[Dict[str, Any]]:
     """
     1. REGEX busca a sequência de 44 dígitos da chave
     2. Algoritmo valida estrutura + DV
@@ -18,13 +18,12 @@ def find_key_valid_access(text: str) -> Optional[Dict[str, any]]:
 
     for extration in extrations:
         validation = nfe_key_validator(extration)
-
-        if validation["Valido"]:
+        if validation["valido"]:
             return validation
         
-        return None
+    return None
 
-def find_cnpjs(text: str) -> List[Dict[str, any]]:
+def find_cnpjs(text: str) -> List[Dict[str, Any]]:
     """
     1. REGEX extrai CNPJs
     2. Algoritmo valida veracidade
@@ -36,7 +35,7 @@ def find_cnpjs(text: str) -> List[Dict[str, any]]:
     for extration in extrations:
         validation = cnpj_validator(extration)
 
-        if validation["Valido"]:
+        if validation["valido"]:
             cnpjs_valid.append(validation)
 
     return cnpjs_valid

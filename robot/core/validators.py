@@ -1,7 +1,68 @@
 import re
-from typing import Dict, List
+from typing import Dict, List, Any, Optional, TypedDict
+from decimal import Decimal, InvalidOperation
 
-def cnpj_validator(cnpj: str) -> Dict[str, any]: ##     VALIDAÇÃO DE CNPJ COM CHECKSUM
+# MOEDAS SUPORTADAS 
+
+class CurrencyConfig(TypedDict):
+    symbols: list[str]
+    decimal_separator: str
+    thousand_separator: str
+    fiscal_brasil: bool
+
+CURRENCY_CONFIG: Dict[str, CurrencyConfig ] = {
+    "BRL": {
+        "symbols": ["R$", "BRL"],
+        "decimal_separator": ",",
+        "thousand_separator": ".",
+        "fiscal_brasil": True
+    }, 
+    "USD": {
+        "symbols": ["$", "USD", "US$"],
+        "decimal_separator": ".",
+        "thousand_separator": ",",
+        "fiscal_brasil": False
+    },
+    "EUR": {
+        "symbols": ["€", "EUR"],
+        "decimal_separator": ",",
+        "thousand_separator": ".",
+        "fiscal_brasil": False
+    },
+    "GBP": {
+        "symbols": ["£", "GBP"],
+        "decimal_separator": ".",
+        "thousand_separator": ",",
+        "fiscal_brasil": False
+    },
+    "JPY": {
+        "symbols": ["¥", "JPY"],
+        "decimal_separator": ".",
+        "thousand_separator": ",",
+        "fiscal_brasil": False
+    },
+    "CNY": {
+        "symbols": ["¥", "CNY", "RMB"],
+        "decimal_separator": ".",
+        "thousand_separator": ",",
+        "fiscal_brasil": False
+    }
+}
+
+def currency_detector(value: str) -> str:
+    value_upper = value.upper().strip()
+
+    for currency_code, config in CURRENCY_CONFIG.items():
+        for symbol in config["symbols"]:
+        ## Verifica se o simbulo aparece no inicio ou no fim  
+            if value_upper.startswith(symbol) or value_upper.endswith(symbol):
+                return currency_code
+            if symbol in value_upper:
+                return currency_code
+    
+    return 'BRL'  # Default para Brasil
+
+def cnpj_validator(cnpj: str) -> Dict[str, Any]: ##     VALIDAÇÃO DE CNPJ COM CHECKSUM
     """
     Valida CNPJ com checksum
     Retorna dict com status e metadados.
@@ -62,7 +123,7 @@ def cnpj_validator(cnpj: str) -> Dict[str, any]: ##     VALIDAÇÃO DE CNPJ COM 
 
 # VALIDAÇÃO DE CHAVE NF-e
 
-def nfe_key_validator(chave: str) -> Dict[str, any]:
+def nfe_key_validator(chave: str) -> Dict[str, Any]:
     """
     Valida chave de acesso NF-e (44 dígitos).
     Estrutura: UF(2) + AAMM(4) + CNPJ(14) + Modelo(2)
@@ -169,36 +230,78 @@ def nfe_key_validator(chave: str) -> Dict[str, any]:
         "ano_mes": f"{ano_completo}-{mes:02d}",
         "cnpj_emitente": validacao_cnpj["cnpj_formatado"],
         "modelo": "NF-e" if modelo == "55" else "NFC-e",
-        "confianca": 90  # Não consultou SEFAZ
+        "confianca": 90  # Não consultou a SEFAZ
     }
 
 
-# VALIDAÇÃO DE VALORES MONETÁRIOS
+# VALIDAÇÃO DE VALORES MONETÁRIOS 
 
-def monetari_value_validator(valor: str) -> Dict[str, any]:
+def monetari_value_validator(
+        valor: str,
+        fiscal_context: bool = False,
+        moeda_esperada: Optional[str] = None
+) -> Dict[str, Any]:
     """
-    Valida se string é valor monetário plausível.
-    Converte para Decimal para evitar float precision.
+    Valida valores monetários extraídos.
+
+    ARGS: 
+        valor: string com valor monetário extraído
+        fiscal_context: se True, aplica regra fiscal brasileira
+        moeda_esperada: código ISO da moeda esperada ('BRL', 'USD', ... )
+
+    RETURNS:
+        dict com validação e metadados
     """
-    from decimal import Decimal, InvalidOperation
-    
-    valor_limpo = valor.strip().replace('R$', '').replace(' ', '')
-    
-    if ',' in valor_limpo and '.' in valor_limpo:
-    
-        valor_limpo = valor_limpo.replace('.', '').replace(',', '.')
 
-    elif ',' in valor_limpo:
+    original_value = valor
+    valor = valor.strip()
 
-        valor_limpo = valor_limpo.replace(',', '.')
-    
-    try:
-        valor_decimal = Decimal(valor_limpo)
-
-    except InvalidOperation:
+    moeda_detectada = currency_detector(valor)
+    # VALIDAÇÃO 1: Contexto Fiscal Brasileiro
+    if fiscal_context and moeda_detectada != 'BRL':
         return {
             "valido": False,
-            "erro": f"Não é um número válido: {valor}",
+            "erro": f"Contexto fiscal brasileiro deve usar Real (R$), não: {moeda_detectada}",
+            "moeda_detectada": moeda_detectada,
+            "confianca": 100
+        }
+    # VALIDAÇÃO 2: Moeda Esperada
+    if moeda_esperada and moeda_detectada != moeda_esperada:
+        return {
+            "valido": False,
+            "erro": f"Moeda esperada {moeda_esperada}, recebida {moeda_detectada}",
+            "moeda_detectada": moeda_detectada,
+            "confianca": 95
+        }
+    
+    config_moeda = CURRENCY_CONFIG.get(moeda_detectada, CURRENCY_CONFIG["BRL"])
+
+    valor_limpo = valor
+    for simbolo in config_moeda["symbols"]:
+        valor_limpo = valor_limpo.replace(simbolo, '')
+
+    valor_limpo = valor_limpo.strip()
+
+    # Detecta formato (BR vs US)
+    # BR: 1.500,00 | US: 1,500.00
+    if config_moeda["decimal_separator"] == ',':
+
+        if ',' in valor_limpo and '.' in valor_limpo:
+            valor_limpo = valor_limpo.replace('.', '').replace(',', '.')
+        elif ',' in valor_limpo:
+            valor_limpo = valor_limpo.replace(',', '.')
+    else:
+        valor_limpo = valor_limpo.replace(',', '')
+
+    valor_limpo = valor_limpo.replace(' ', '')
+
+    try:
+        valor_decimal = Decimal(valor_limpo)
+    except (InvalidOperation , ValueError):
+        return {
+            "valido": False,
+            "erro": f"Formato inválido: não é um número válido ({original_value})",
+            "moeda detectada": moeda_detectada,
             "confianca": 100
         }
     
@@ -207,6 +310,7 @@ def monetari_value_validator(valor: str) -> Dict[str, any]:
         return {
             "valido": False,
             "erro": "Valor negativo",
+            "moeda_detectada": moeda_detectada,
             "confianca": 100
         }
     
@@ -214,20 +318,53 @@ def monetari_value_validator(valor: str) -> Dict[str, any]:
         return {
             "valido": False,
             "erro": f"Valor absurdo: R$ {valor_decimal:,.2f}",
+            "moeda_detectada": moeda_detectada,
             "confianca": 90
         }
     
     # Verifica se tem mais de 2 casas decimais (improvável em NF)
-    if valor_decimal != valor_decimal.quantize(Decimal('0.01')):
-        return {
-            "valido": False,
-            "erro": "Mais de 2 casas decimais",
-            "confianca": 80
-        }
+    try:
+        valor_normalized = valor_decimal.quantize(Decimal('0.01'))
+        if valor_decimal != valor_normalized:
+            return {
+                "valido": False,
+                "erro": "Mais de 2 casas decimais",
+                "moeda_detectada": moeda_detectada,
+                "confianca": 80
+            }
+    except:
+        pass
+
+    if moeda_detectada == 'BRL':
+        valor_formatado = f"R$ {valor_decimal:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    elif moeda_detectada in ['USD', 'GBP']:
+        simbolo = '£' if moeda_detectada == 'GBP' else '$'
+        valor_formatado = f"{simbolo} {valor_decimal:,.2f}"
+    elif moeda_detectada == 'EUR':
+        valor_formatado = f"€ {valor_decimal:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    elif moeda_detectada in ['JPY', 'CNY']:
+        valor_formatado = f"¥ {valor_decimal:,.0f}"  # Iene não usa decimais
+    else:
+        valor_formatado = f"{moeda_detectada} {valor_decimal:,.2f}" 
     
     return {
         "valido": True,
         "valor_decimal": valor_decimal,
-        "valor_formatado": f"R$ {valor_decimal:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        "valor_formatado": valor_formatado,
+        "moeda" : moeda_detectada,
+        "fiscal_brasil": config_moeda["fiscal_brasil"],
         "confianca": 95
     }
+
+# FUNÇÃO HELPER PARA CONTEXTO FISCAL
+
+def validator_valor_fiscal_brasileiro(valor: str) -> Dict[str, Any]:
+    """
+    Atalho para validação em contexto fiscal brasileiro.
+    Força verificação de moeda BRL.
+    """
+    return monetari_value_validator(
+        valor,
+        fiscal_context=True,
+        moeda_esperada='BRL'
+    )

@@ -2,9 +2,9 @@ import re
 from typing import List
 
 CLEAN_REPLACEMENTS = [     
-    (r'\xa0', ' '),
-    (r'\u200b', ''),
-    (r'\r\n', '\n'),
+    ('\xa0', ' '),
+    ('\u200b', ''),
+    ('\r\n', '\n'),
 ]
 
 def normalize_whitespace(text: str) -> str: ##     Eliminar espaços em branco preserva quebras de linha (Universal)

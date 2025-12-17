@@ -1,0 +1,36 @@
+name: Fiscal Egine Tests
+
+on:
+  push:
+    branches: [ master, main ] 
+  pull_request:
+    
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run pytest with logs
+      run: |
+        pytest -q --disable-warnings --maxfail=1 \
+        --junitxml=reports/pytest-reposrt.xml \
+        --log-cli-level=INFO
+      
+    - name: Upload pytest reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: pytest-reports
+        path: reports/pytest-reports.xml
