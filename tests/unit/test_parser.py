@@ -30,7 +30,6 @@ def nfse_simples():
     VALOR TOTAL DOS SERVIÇOS: R$ 2.500,00
     """
 
-
 @pytest.fixture
 def nfe_completa():
     """NF-e completa com múltiplos campos"""
@@ -54,7 +53,6 @@ def nfe_completa():
     VALOR TOTAL: R$ 2.500,00
     VALOR LÍQUIDO: R$ 2.500,00
     """
-
 
 @pytest.fixture
 def documento_sem_cnpj():

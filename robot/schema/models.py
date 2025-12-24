@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-
 class Item(BaseModel): ##     Semântica para agente n8n
     description: str
     quantity: Optional[float] = None

@@ -60,6 +60,7 @@ def normalize_text(text: str) -> str: ##     Normaliza identação padrão de te
     text = normalize_commas_and_dots(text)
 
     lines = text.splitlines()
+    
     lines = strip_lines_noise(lines)
 
     seen = set()
