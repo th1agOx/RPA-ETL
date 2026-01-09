@@ -12,6 +12,27 @@ CNPJ_PATTERN = r'\b\d{2}\.?\d{3}\.?\d{3}/?\.?\d{4}-?\d{2}\b'
 KEY_PATTERN = r'\b\d{44}\b'  # nfe key de 44 dígitos
 VALUE_PATTERN = r'R?\$?\s*([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{2}))'
 
+def clean_party_name(name: str) -> Optional[str]:
+    """
+    Normaliza nome de Entidades:
+    1. Uppercase
+    2. Remove espaços extras
+    3. Remove pontuação solta no fim
+    """
+    if not name:
+        return None
+    
+    # Remove espaços multiplos e quebras
+    name = re.sub(r'\s+', ' ', name)
+    
+    # Uppercase para padronização
+    name = name.upper().strip()
+    
+    # Remove hífens ou pontos soltos no final (resíduo comum de OCR)
+    name = re.sub(r'[\.\-\,]+$', '', name)
+    
+    return name.strip()
+
 def normalizer_unicode(text: str) -> str:
     try:
         return text.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
@@ -68,7 +89,7 @@ def extract_emission_and_competence(text: str) -> tuple:
         m = re.search(pattern, text, re.IGNORECASE)
         if m:
             emission = m.group(1)
-        break
+            break
 
         # Fallback: primeira data DD/MM/YYYY encontrada
     if not emission:
@@ -152,7 +173,7 @@ def extract_issuer_recipient(text: str) -> tuple:
             lines = [l.strip() for l in issuer_block.splitlines() if l.strip()]
 
             # Primeira linha = nome
-            issuer_name = lines[0].strip() if lines else None
+            issuer_name = clean_party_name(lines[0]) if lines else None
 
             # Busca CNPJ válido no bloco
             valid_cnpjs = find_cnpjs(issuer_block)
@@ -175,7 +196,7 @@ def extract_issuer_recipient(text: str) -> tuple:
             lines = [l.strip() for l in recipient_block.splitlines() if l.strip()]
 
             # Primeira linha = nome
-            recipient_name = lines[0] if lines else None
+            recipient_name = clean_party_name(lines[0]) if lines else None
 
             # Busca CNPJ válido no bloco
             valid_cnpjs = find_cnpjs(recipient_block)
@@ -203,8 +224,8 @@ def extract_items(text: str) -> List[Item]:
     # FASE 1: ENCONTRAR BLOCO DE ITENS
     # ============================================
     patterns_block = [
-        r'DISCRIMINA[CÇ][AÃ]O(?:\s+DOS\s+SERVI[CÇ]OS)?\s*(.*?)\s*(?:TOTAL\s+GERAL|VALOR\s+TOTAL|VALOR\s+L[IÍ]QUIDO|OBSERVA[CÇ]|$)',
-        r'DISCRIMINA[CÇ][AÃ]O(?:\s+DOS\s+PRODUTOS)?\s*(.*?)\s*(?:TOTAL|OBSERVA[CÇ]|$)',
+        r'DISCRIMINA[CÇ][AÃ]O(?:\s+DOS\s+SERVI[CÇ]OS)?\s*(.*?)\s*(?:TOTAL|VALOR\s+TOTAL|VALOR\s+L[IÍ]QUIDO|OBSERVA[CÇ]|DATA|COMPET[EÊ]NCIA|$)',
+        r'DISCRIMINA[CÇ][AÃ]O(?:\s+DOS\s+PRODUTOS)?\s*(.*?)\s*(?:TOTAL|OBSERVA[CÇ]|DATA|COMPET[EÊ]NCIA|$)',
     ]
     
     items_block = None
@@ -222,6 +243,11 @@ def extract_items(text: str) -> List[Item]:
         
         # Ignora linhas vazias ou muito curtas
         if not linha or len(linha) < 10:
+            continue
+        
+        # Filtro de resiliência: Ignora linhas que parecem metadados perdidos no bloco
+        upper_ln = linha.upper()
+        if any(token in upper_ln for token in ["TOTAL", "VALOR", "DATA", "COMPETÊNCIA", "EMISSÃO", "VENCIMENTO"]):
             continue       
 
         valores = re.findall(VALUE_PATTERN, linha)
@@ -278,12 +304,31 @@ def extract_from_text(text: str, source_filename: Optional[str] = None) -> Invoi
     """
     text = normalizer_unicode(text)
 
-    # Extrai e valida dados
-    emission, competence = extract_emission_and_competence(text)
-    chave_validada = find_key_valid_access(text)
-    issuer, recipient = extract_issuer_recipient(text)
-    total = extract_total_valid(text)
-    items = extract_items(text)
+    # Extrai e valida dados com proteção contra falhas individuais
+    try:
+        emission, competence = extract_emission_and_competence(text)
+    except Exception:
+        emission, competence = None, None
+
+    try:
+        chave_validada = find_key_valid_access(text)
+    except Exception:
+        chave_validada = None
+
+    try:
+        issuer, recipient = extract_issuer_recipient(text)
+    except Exception:
+        issuer, recipient = None, None
+
+    try:
+        total = extract_total_valid(text)
+    except Exception:
+        total = None
+
+    try:
+        items = extract_items(text)
+    except Exception:
+        items = []
     
     # Monta resultado
     financials = Financials(

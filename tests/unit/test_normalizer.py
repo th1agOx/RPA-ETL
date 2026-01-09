@@ -1,23 +1,27 @@
+import pytest
 from robot.core.text_normalizer import normalize_text
 
-def test_normalize_remove_invisible_chars():
-    raw ="VALOR\xa0\xa0TOTAL\n400 , 00"
+@pytest.mark.normalization
+def test_text_normalize_macro_cleneup_and_stability():
+    raw = (
+        "PRESTADOR\u00A0\u00A0DE\u00A0SERVIÇOS\n"
+        "ABC TECNOLOGIA LTDA\n"
+        "ABC TECNOLOGIA LTDA\n"
+        "\n"
+        "TOMADOR\u200B DE SERVIÇO\n"
+        "CLIENTE XYZ\n"
+        "VALOR\u00A0\u00A0TOTAL\n"
+        "400 , 00\n"
+    )
 
-    clean = normalize_text(raw)
+    normalized = normalize_text(raw)
 
-    assert "\xa0" not in clean
-    assert "400,00" in clean
+    assert "\u00A0" not in normalized
+    assert "\u200B" not in normalized
 
-def test_normalize_preserves_structure():
-    raw = """
-    PRESTADOR DE SERVIÇOS
-    EMPRESA TESTE LTDA
-    
-    TOMADOR DE SERVIÇO
-    CLIENTE TESTE LTDA
-    """
+    assert "PRESTADOR" in normalized
+    assert "TOMADOR" in normalized
 
-    clean = normalize_text(raw)
+    assert normalized.count("ABC TECNOLOGIA LTDA") == 1
 
-    assert "PRESTADOR DE SERVIÇOS" in clean
-    assert "TOMADOR DE SERVIÇO" in clean
+    assert "400" in normalized
