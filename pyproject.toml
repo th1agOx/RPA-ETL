@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rpa-etl"
-version = 1.1.0 
-description = "rpa engine for fiscal document extration and orchestration"   
+version = 1.1.0       
+description = "rpa engine for fiscal document extraction and orchestration"   
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
