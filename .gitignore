@@ -14,4 +14,10 @@ output/
 *.json
 *.csv
 
-tests/input_extract_data/
+scripts/
+rpa_etl.egg-info/
+__init__.py
+.venv/
+*.txt
+*.log
+*.xml

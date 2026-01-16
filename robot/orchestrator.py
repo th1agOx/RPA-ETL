@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Union, Optional, Dict 
 from pathlib import Path
 
-from pdf_reader import pdf_path_to_text, pdf_bytes_to_text, PDFExtractionResult
+from .pdf_reader import pdf_path_to_text, pdf_bytes_to_text, PDFExtractionResult
 from .core.text_normalizer import normalize_text
 from .core.parser import extract_from_text
 from .schema.orchestrator_models import PipelineResult, OrchestratorEvent
