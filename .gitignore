@@ -9,9 +9,20 @@ __pycache__/
 venv/
 .env/
 *.env
+.venv/
 
 output/
 *.json
 *.csv
+*.log
+*.xml
 
-tests/input_extract_data/
+# Scripts
+scripts/
+
+# Build
+rpa_etl.egg-info/
+__init__.py
+
+# Tests
+*.txt

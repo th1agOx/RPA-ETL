@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpa-etl"
+version = "0.2.1"      
+description = "RPA Engine for fiscal document extraction and orchestration"   
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Thiago Rocha", email = "thdarochabp@gmail.com" }
+]
+
+dependencies = [
+  "pydantic>=2.0",
+  "regex>=2023.0",
+  "PyMuPDF>=1.26.0",
+  "python-dateutil>=2.9",
+  "puremagic>=1.30"
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=9.0",
+  "pytest-cov>=4.1",
+  "pytest-benchmark>=4.0"
+]
+
+api = [
+  "fastapi>=0.110",
+  "uvicorn>=0.27"
+]
+
+observability = [
+  "structlog>=24.0",
+  "opentelemetry-sdk>=1.25"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["robot"]

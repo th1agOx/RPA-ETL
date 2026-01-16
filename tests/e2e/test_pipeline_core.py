@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 
-from robot.core.pdf_reader import pdf_bytes_to_text
+from robot.pdf_reader import pdf_bytes_to_text
 from robot.core.text_normalizer import normalize_text
 from robot.core.parser import extract_from_text
 from robot.schema.models import InvoiceExtractionResult
