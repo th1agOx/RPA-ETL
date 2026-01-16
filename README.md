@@ -1,12 +1,12 @@
 # RPA-ETL: Inteligência Fiscal & Orquestração de Dados 
 
-![Build Status](https://github.com/th1agOx/RPA-ETL/tree/build/workflows/tests.yml)
-![Test Coverage](https://img.shields.io/codecov/c/github/th1agOx/RPA-ETL)
-![Version](https://img.shields.io/github/v/release/th1agOx/RPA-ETL?display_name=tag)
+![CI Build](https://github.com/th1agOx/RPA-ETL/actions/workflows/tests.yml/badge.svg)
+![Coverage](https://img.shields.io/codecov/c/github/th1agOx/RPA-ETL)
+![Version](https://img.shields.io/github/v/release/th1agOx/RPA-ETL?color=blue&label=version)
 ![License](https://img.shields.io/github/license/th1agOx/RPA-ETL)
-![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)
+![Python](https://img.shields.io/badge/python-3.12-blue?logo=python)
 
-> **Engine RPA de nível enterprise**, focado em processamento contábil, auditoria orientada a eventos e extração heurística de documentos fiscais.
+> **Enterprise RPA Engine** focado em processamento contábil de alta fidelidade, auditoria orientada a eventos e extração heurística.
 
 ---
 
@@ -39,9 +39,12 @@ Principais pilares:
 
 ```mermaid
 graph LR
-    A[Documento Fiscal (PDF)] --> B[PDF Reader]
-    B --> C[Text Normalizer]
-    C --> D[Parser Heurístico]
-    D --> E[Orchestrator]
-    E --> F[Event Store / Stream]
-    E --> G[Output Estruturado]
+    A[Doc Fiscal PDF] --> B[Universal Parser]
+    B --> C{Heurística/Regex}
+    C --> D[Event Sourcing Store]
+    D --> E[Output Estruturado]
+    E --> F[Consumo: Core Semântico / ERP]
+    
+    subgraph Observabilidade
+    D -.-> G[Traceback & Logs]
+    end

@@ -9,15 +9,20 @@ __pycache__/
 venv/
 .env/
 *.env
+.venv/
 
 output/
 *.json
 *.csv
-
-scripts/
-rpa_etl.egg-info/
-__init__.py
-.venv/
-*.txt
 *.log
 *.xml
+
+# Scripts
+scripts/
+
+# Build
+rpa_etl.egg-info/
+__init__.py
+
+# Tests
+*.txt

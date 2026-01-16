@@ -49,7 +49,12 @@ def strip_lines_noise(lines: List[str]) -> List[str]: ##     Filtra linhas não-
 
     return out
 
-def normalize_text(text: str) -> str: ##     Normaliza identação padrão de textos ainda de forma conservadora (standardization)
+def normalize_text(text: str) -> str: 
+    if not isinstance(text, str ):
+        raise TypeError(
+            f"normalize_text espera receber uma string, mas recebeu {type(text).__name__}"
+        )
+         
     for pat, repl in CLEAN_REPLACEMENTS:
         text = text.replace(pat, repl)
 

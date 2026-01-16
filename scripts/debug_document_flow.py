@@ -12,7 +12,7 @@ with open(PDF_PATH, "rb") as f:
 raw_result = pdf_bytes_to_text(pdf_bytes)
 
 print("\n================ RAW TEXT ================\n")
-print(raw_result[:3000])  # corta para não explodir o terminal
+print(raw_result[:3000])  
 
 # 2. Normalização
 normalized_text = normalize_text(raw_result.text) 
