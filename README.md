@@ -1,6 +1,6 @@
 # RPA-ETL: Inteligência Fiscal & Orquestração de Dados 
 
-![Build Status](https://img.shields.io/github/actions/workflow/status/th1agOx/RPA-ETL/main.yml?branch=main)
+![Build Status](https://github.com/th1agOx/RPA-ETL/tree/build/workflows/tests.yml)
 ![Test Coverage](https://img.shields.io/codecov/c/github/th1agOx/RPA-ETL)
 ![Version](https://img.shields.io/github/v/release/th1agOx/RPA-ETL?display_name=tag)
 ![License](https://img.shields.io/github/license/th1agOx/RPA-ETL)
