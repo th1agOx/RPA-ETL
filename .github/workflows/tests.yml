@@ -2,7 +2,7 @@ name: Fiscal Engine CI & Coverage
 
 on:
   push:
-    branches: [ main, debug, feat/orchestrator-integration, build, ci/github-actions-setup, ci/github-actions ]
+    branches: [ main, debug, build, feat/orchestrator-integration, ci/github-actions-setup, ci/github-actions ]
   pull_request:
     branches: [ main ]
 
@@ -16,18 +16,18 @@ jobs:
         with:
           fetch-depth: 2 
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           cache: 'pip'
 
-      - name: Install Package (Dev Mode)
+      - name: Install Package & Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ".[test,observability,api]" # Instala o que está no seu pyproject.toml
+          pip install -e ".[test,observability,api]" 
 
-      - name: Run Tests with Coverage
+      - name: Run pytest
 
         run: pytest -m "not slow" --cov=robot --cov-report=xml
 
