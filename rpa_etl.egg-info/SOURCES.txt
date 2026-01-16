@@ -1,8 +1,0 @@
-pyproject.toml
-robot/__init__.py
-robot/pdf_reader.py
-rpa_etl.egg-info/PKG-INFO
-rpa_etl.egg-info/SOURCES.txt
-rpa_etl.egg-info/dependency_links.txt
-rpa_etl.egg-info/requires.txt
-rpa_etl.egg-info/top_level.txt

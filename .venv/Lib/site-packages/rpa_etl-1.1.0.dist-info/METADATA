@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: rpa-etl
-Version: 1.1.0
-Summary: RPA engine for fiscal document extraction and orchestration
-Author-email: Thiago Rocha <thdarochabp@gmail.com>
-Requires-Python: >=3.10
-Description-Content-Type: text/markdown
-Requires-Dist: pytest
-Requires-Dist: pymupdf
