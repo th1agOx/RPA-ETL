@@ -49,7 +49,23 @@ def strip_lines_noise(lines: List[str]) -> List[str]: ##     Filtra linhas não-
 
     return out
 
-def normalize_text(text: str) -> str: ##     Normaliza identação padrão de textos ainda de forma conservadora (standardization)
+def fix_date_spacing(text: str) -> str: 
+    """
+    Garante espaço entre data e hora quando coladas pelo processo de normalização.
+    Ex: 15/12/202410:30:00 -> 15/12/2024 10:30:00
+    """
+    return re.sub(
+        r'(\d{2}/\d{2}/\d{4})(\d{2}:\d{2}:\d{2})',
+        r'\1 \2',
+        text
+    )
+
+def normalize_text(text: str) -> str: 
+    if not isinstance(text, str ):
+        raise TypeError(
+            f"normalize_text espera receber uma string, mas recebeu {type(text).__name__}"
+        )
+         
     for pat, repl in CLEAN_REPLACEMENTS:
         text = text.replace(pat, repl)
 
@@ -57,6 +73,8 @@ def normalize_text(text: str) -> str: ##     Normaliza identação padrão de te
 
     text = join_split_numbers(text)
 
+    text = fix_date_spacing(text)
+    
     text = normalize_commas_and_dots(text)
 
     lines = text.splitlines()
