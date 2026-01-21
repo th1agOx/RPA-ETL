@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from robot.orchestrator import Orchestrator
+from .orchestrator import Orchestrator
 from robot.schema.orchestrator_models import PipelineResult
 
 # Mocking the dependencies to test Orchestrator Logic purely
