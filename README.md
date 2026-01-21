@@ -4,7 +4,7 @@
 ![Coverage](https://img.shields.io/codecov/c/github/th1agOx/RPA-ETL)
 ![Version](https://img.shields.io/github/v/release/th1agOx/RPA-ETL?color=blue&label=version)
 ![License](https://img.shields.io/github/license/th1agOx/RPA-ETL)
-![Python](https://img.shields.io/badge/python-3.12-blue?logo=python)
+![Python](https://img.shields.io/badge/python-3.13-blue?logo=python)
 
 > **Enterprise RPA Engine** focado em processamento contábil de alta fidelidade, auditoria orientada a eventos e extração heurística.
 
