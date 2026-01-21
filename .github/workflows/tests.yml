@@ -2,7 +2,7 @@ name: Fiscal Engine CI
 
 on:
   push:
-    branches: [ main, buld, feat/orchestrator-integration, debug, ci/github-actions ]
+    branches: [ main, build, feat/orchestrator-integration, debug, ci/github-actions ]
   pull_request:
     branches: [ main ]
 
