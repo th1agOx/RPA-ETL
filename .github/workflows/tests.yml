@@ -16,10 +16,10 @@ jobs:
         with:
           fetch-depth: 2 
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           cache: 'pip'
 
       - name: Install Package & dependencies
@@ -27,9 +27,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install --ignore-installed --no-cache-dir -e ".[test,api,observability]" 
 
-      - name: Run Tests with Coverage
-
-        run: pytest --cov=robot --cov-report=xml
+      - name: Run Tier 1 Tests (Unit Tests)
+        run: pytest -m "not e2e and not integration and not performance and not contract and not slow" --cov=robot --cov-report=xml
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5

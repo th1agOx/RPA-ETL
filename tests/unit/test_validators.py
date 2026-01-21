@@ -65,7 +65,7 @@ def test_cnpj_valid_example():
     assert result["confianca"] == 95
 
 @pytest.mark.validation
-@pytest.mark.audit(
+@pytest.mark.parametrize(
     "cnpj_input",
     [
         "11.222.333/0001-81", # matriz válida
@@ -76,6 +76,8 @@ def test_cnpj_valid_multiple(cnpj_input):
     result = cnpj_validator(cnpj_input)
 
     assert result["valido"] is True
+
+    pass
 
 # Valores monetários
 
