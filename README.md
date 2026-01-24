@@ -2,7 +2,7 @@
 
 ![CI Build](https://github.com/th1agOx/RPA-ETL/actions/workflows/tests.yml/badge.svg)
 ![Coverage](https://img.shields.io/codecov/c/github/th1agOx/RPA-ETL)
-![Version](https://img.shields.io/github/v/release/th1agOx/RPA-ETL?color=blue&label=version)
+![Version](https://img.shields.io/github/v/release/th1agOx/RPA-ETL?include_prereleasescolor=blue&label=version)
 ![License](https://img.shields.io/github/license/th1agOx/RPA-ETL)
 ![Python](https://img.shields.io/badge/python-3.13-blue?logo=python)
 
