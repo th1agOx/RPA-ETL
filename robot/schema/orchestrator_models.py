@@ -3,6 +3,12 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 from .models import InvoiceExtractionResult
 
+class ValidationIssue(BaseModel):
+    code: str
+    field: Optional[str] = None
+    message: str
+    severity: Literal["warning", "error"]
+
 class OrchestratorEvent(BaseModel):
     """
     Representa um evento imutável ocorrido durante o pipeline.
@@ -27,14 +33,34 @@ class PipelineResult(BaseModel):
     start_time: datetime
     end_time: Optional[datetime] = None
     
-    status: Literal["success", "error"]
+    status: Literal["success", "partial", "error"]
     
+    # Trust Layer
+    trust_score: float = 0.0 # 0.0 a 1.0
+    validation_issues: List[ValidationIssue] = Field(default_factory=list)
+
     # Audit Trail: Lista ordenada de eventos
     events: List[OrchestratorEvent] = Field(default_factory=list)
     
-    # Payload: Só existe se status == success
-    # Usando Optional para garantir que falhas não tenham payload parcial
+    # Payload: Só existe se status == success ou partial
     payload: Optional[InvoiceExtractionResult] = None
     
     # Metadados brutos (ex: hashes de arquivos, tamanho)
     raw_metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    @staticmethod
+    def map_to_event_contract(result: "PipelineResult") -> dict:
+        return {
+            "event_id" : result.execution_id,
+            "event_type": "fiscal.extraction.completed",
+            "timestamp": result.end_time.isoformat() if result.end_time else datetime.now().isoformat(),
+            "tenant_id": result.tenant_id,
+            "status": result.status, 
+            "data": {
+                "payload": result.payload.model_dump() if result.payload else {},
+                "audit_trail": [event.model_dump() for event in result.events],
+                "metrics": {
+                    "total_duration_ms": (result.end_time - result.start_time).total_seconds() * 1000
+                }
+            }
+        }
