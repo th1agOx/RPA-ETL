@@ -28,7 +28,7 @@ jobs:
           pip install --ignore-installed --no-cache-dir -e ".[test,api,observability]" 
 
       - name: Run Tier 1 Tests (Unit Tests)
-        run: pytest -m "not e2e and not integration and not performance and not contract and not slow" --cov=robot --cov-report=xml
+        run: pytest -m "not performance and not contract and not slow" --cov=robot --cov-report=xml
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
