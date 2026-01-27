@@ -39,4 +39,4 @@ observability = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["robot"]
+include = ["robot*"]
