@@ -26,3 +26,7 @@ __init__.py
 
 # Tests
 *.txt
+
+# Core
+robot/core
+robot/schema
