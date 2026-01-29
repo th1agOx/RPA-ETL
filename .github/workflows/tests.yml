@@ -2,7 +2,7 @@ name: Fiscal Engine CI/CD Deep Testing
 
 on:
   push:
-    branches: [ main, build, feat/orchestrator-integration, ci/github-actions, feat/stabilize-e2e ]
+    branches: [ main, build, feat/orchestrator-integration, ci/github-actions-setup, feat/stabilize-e2e ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
