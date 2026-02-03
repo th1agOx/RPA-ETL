@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rpa-etl"
-version = "0.2.1"      
-description = "RPA Engine for fiscal document extraction and orchestration"   
+version = "0.2.1"
+description = "RPA Engine for fiscal document extraction and orchestration"
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [
@@ -22,10 +22,10 @@ dependencies = [
 [project.optional-dependencies]
 
 api = [
-  "fastapi>="^0.115",
-  "uvicorn>={ extras = ["standard"], version = "^0.32" }",
-  "python-multipart>="^0.0.12",
-  "httpx>="^0.27"
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "python-multipart>=0.0.12",
+  "httpx>=0.27"
 ]
 
 worker = [
@@ -35,7 +35,7 @@ worker = [
 
 observability = [
   "ddtrace>=2.14",
-  "datadog>=0.50" 
+  "datadog>=0.50"
 ]
 
 dev = [
@@ -48,4 +48,4 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["robot*"]
+include = ["robot*", "api*"]

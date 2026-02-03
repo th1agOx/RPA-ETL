@@ -37,7 +37,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
 
-  # Tier 2 integration ( executa se a camada 1 passar )
+  # Tier 2 integration 
+
   integration-tests:
     name: Tier 2 - Orchestrator Integration
     needs: unit-tests
@@ -68,7 +69,8 @@ jobs:
           name: debug-logs-${{ github.run_id }}
           path: artifacts/
 
-  # CAMADA 3: E2E (Executa apenas para Main ou manual)
+  # CAMADA 3: E2E 
+  
   e2e-pipeline:
     name: Tier 3 - Full E2E Pipeline
     needs: integration-tests
