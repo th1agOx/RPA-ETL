@@ -1,0 +1,32 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - rpa-api
+
+  rpa-api:
+    build: ..
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    env_file:
+      - .env
+    expose:
+      - "8000"
+
+  celery-worker:
+    build: ..
+    command: celery -A tasks worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - redis-celery
+
+  redis-celery:
+    image: redis:7-alpine
+
+  redis-eventbus:
+    image: redis:7-alpine

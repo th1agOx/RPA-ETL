@@ -1,0 +1,12 @@
+.git
+.github
+.venv
+__pycache__
+tests/
+artifacts/
+.env
+.env.example
+*.md
+pytest.ini
+docker-compose.yml
+scripts/
