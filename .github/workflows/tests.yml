@@ -27,8 +27,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --ignore-installed --no-cache-dir -e ".[dev,api,observability]"
-          pip list #
-          which pytest || echo "PYTEST NÃO ENCONTRADO"
+          pip list 
 
       - name: run unit tests
         run: pytest -m "validation or normalization or audit" --cov=robot --cov-report=xml
