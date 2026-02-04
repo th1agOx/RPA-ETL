@@ -25,17 +25,17 @@ api = [
   "fastapi>=0.115",
   "uvicorn[standard]>=0.32",
   "python-multipart>=0.0.12",
-  "httpx>=0.27",
+  "httpx>=0.27"
 ]
 
 worker = [
   "celery>=5.4",
-  "redis>=5.2",
+  "redis>=5.2"
 ]
 
 observability = [
   "ddtrace>=2.14",
-  "datadog>=0.50",
+  "datadog>=0.50"
 ]
 
 dev = [
@@ -43,7 +43,7 @@ dev = [
   "pytest-cov",
   "pytest-benchmark",
   "ruff",
-  "mypy",
+  "mypy"
 ]
 
 [tool.setuptools.packages.find]
