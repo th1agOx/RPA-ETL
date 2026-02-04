@@ -1,11 +1,13 @@
 """
 Tests for API endpoints (Milestone 1).
 """
+import pytest
 from fastapi.testclient import TestClient
 from api.main import app
 
 client = TestClient(app)
 
+pytestmark = pytest.mark.api
 
 def test_health_check():
     """Test health endpoint returns 200 and correct structure."""
