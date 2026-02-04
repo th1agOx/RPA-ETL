@@ -1,4 +1,3 @@
-import pytest
 from robot.core.parser import (
     extract_blocks, 
     clean_party_name, 
