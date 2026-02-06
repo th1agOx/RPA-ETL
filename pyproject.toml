@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rpa-etl"
-version = "0.2.1"      
-description = "RPA Engine for fiscal document extraction and orchestration"   
+version = "0.2.1"
+description = "RPA Engine for fiscal document extraction and orchestration"
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [
@@ -48,4 +48,4 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["robot*"]
+include = ["robot*", "api*"]

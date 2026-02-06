@@ -27,8 +27,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --ignore-installed --no-cache-dir -e ".[dev,api,observability]"
-          pip list #
-          which pytest || echo "PYTEST NÃO ENCONTRADO"
 
       - name: run unit tests
         run: pytest -m "validation or normalization or audit" --cov=robot --cov-report=xml
@@ -39,7 +37,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
 
-  # Tier 2 integration ( executa se a camada 1 passar )
+  # Tier 2 integration 
+
   integration-tests:
     name: Tier 2 - Orchestrator Integration
     needs: unit-tests
@@ -58,7 +57,7 @@ jobs:
           python-version: '3.13'
           
       - name: Install dependencies
-        run: pip install -e ".[dev,observability]"
+        run: pip install -e ".[dev,api,observability]"
           
       - name: Run Integration Tests
         run: pytest -m "integration or event_sourcing" --cov=robot --cov-append --cov-report=xml
@@ -70,7 +69,8 @@ jobs:
           name: debug-logs-${{ github.run_id }}
           path: artifacts/
 
-  # CAMADA 3: E2E (Executa apenas para Main ou manual)
+  # CAMADA 3: E2E 
+  
   e2e-pipeline:
     name: Tier 3 - Full E2E Pipeline
     needs: integration-tests
