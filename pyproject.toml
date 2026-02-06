@@ -30,7 +30,7 @@ api = [
 
 worker = [
   "celery>=5.4",
-  "redis>=5.2",
+  "redis>=5.2"
 ]
 
 observability = [
@@ -43,7 +43,7 @@ dev = [
   "pytest-cov",
   "pytest-benchmark",
   "ruff",
-  "mypy",
+  "mypy"
 ]
 
 [tool.setuptools.packages.find]
